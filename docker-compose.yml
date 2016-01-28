@@ -1,0 +1,33 @@
+application:
+  build: application
+  volumes:
+    - ./application/source:/app
+
+taskers:
+  build: taskers
+  links:
+    - redis
+  volumes_from:
+    - application
+  hostname: workers
+
+web:
+  build: web
+  links:
+    - redis
+  ports:
+    - 80
+  volumes_from:
+    - application
+  hostname: site
+
+monitor:
+  image: placr/flower:latest
+  links:
+    - redis
+  ports:
+    - 5555
+  hostname: monitor
+
+redis:
+  image: redis:latest
